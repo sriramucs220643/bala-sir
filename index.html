@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A4 Product Sheet</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+}
+
+/* Form Page */
+.container {
+    padding: 20px;
+    text-align: center;
+}
+
+input {
+    padding: 10px;
+    margin: 5px;
+    width: 90%;
+    max-width: 400px;
+}
+
+button {
+    padding: 10px 15px;
+    margin: 10px 5px;
+    cursor: pointer;
+}
+
+/* A4 Layout */
+#a4 {
+    width: 210mm;
+    min-height: 297mm;
+    margin: auto;
+    padding: 10mm;
+    background: white;
+}
+
+/* Scroll on mobile */
+#previewPage {
+    overflow-x: auto;
+}
+
+.header img {
+    width: 100%;
+    height: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 10px;
+}
+
+/* Mobile fix */
+@media (max-width: 768px) {
+    #a4 {
+        transform: scale(0.7);
+        transform-origin: top center;
+    }
+}
+
+/* Print */
+@media print {
+    .container, .actions {
+        display: none;
+    }
+
+    #a4 {
+        transform: scale(1);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- INPUT PAGE -->
+<div class="container" id="formPage">
+    <h2>Enter Products</h2>
+
+    <div id="products">
+        <div>
+            <input type="text" placeholder="Product Name">
+            <input type="text" placeholder="Price">
+        </div>
+    </div>
+
+    <button onclick="addProduct()">+ Add Product</button>
+    <button onclick="generatePreview()">Submit</button>
+</div>
+
+<!-- PREVIEW PAGE -->
+<div id="previewPage" style="display:none;">
+    <div id="a4">
+        
+        <!-- HEADER IMAGE (YOU ADD HERE) -->
+        <div class="header">
+            <img src="Untitled design.jpg" alt="Header Image">
+        </div>
+
+        <!-- PRODUCT TABLE -->
+        <table id="productTable">
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+            </tr>
+        </table>
+
+    </div>
+
+    <div class="actions" style="text-align:center;">
+        <button onclick="window.print()">Print</button>
+    </div>
+</div>
+
+<script>
+function addProduct() {
+    let div = document.createElement("div");
+    div.innerHTML = `
+        <input type="text" placeholder="Product Name">
+        <input type="text" placeholder="Price">
+    `;
+    document.getElementById("products").appendChild(div);
+}
+
+function generatePreview() {
+    let productDivs = document.querySelectorAll("#products div");
+    let table = document.getElementById("productTable");
+
+    table.innerHTML = `
+        <tr>
+            <th>Product</th>
+            <th>Price</th>
+        </tr>
+    `;
+
+    productDivs.forEach(div => {
+        let inputs = div.querySelectorAll("input");
+        let name = inputs[0].value;
+        let price = inputs[1].value;
+
+        if (name && price) {
+            let row = table.insertRow();
+            row.insertCell(0).innerText = name;
+            row.insertCell(1).innerText = price;
+        }
+    });
+
+    document.getElementById("formPage").style.display = "none";
+    document.getElementById("previewPage").style.display = "block";
+}
+</script>
+
+</body>
+</html>
