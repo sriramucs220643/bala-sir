@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A4 Product Sheet</title>
 
+<!-- PDF Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -33,49 +36,40 @@ button {
 /* A4 Layout */
 #a4 {
     width: 210mm;
-    min-height: 297mm;
+    height: 297mm;
     margin: auto;
-    padding: 10mm;
+    padding: 8mm;
     background: white;
     box-sizing: border-box;
-    overflow: hidden;
-}
-
-/* Mobile scroll */
-#previewPage {
-    overflow-x: auto;
+    overflow: hidden; /* 🔥 FIX */
 }
 
 /* Header */
 .header img {
     width: 100%;
     height: auto;
+    max-height: 120mm; /* prevent large image */
+    object-fit: cover;
 }
 
-/* Table Fix */
+/* Table */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    margin-top: 10px;
     table-layout: fixed;
 }
 
-table, th, td {
-    border: 1px solid black;
-}
-
 th, td {
-    padding: 8px;
-    font-size: 14px;
-    word-wrap: break-word;
+    border: 1px solid black;
+    padding: 6px;
+    font-size: 12px;
+    word-break: break-word;
 }
 
-/* Mobile fix */
-@media (max-width: 768px) {
-    #a4 {
-        transform: scale(0.7);
-        transform-origin: top center;
-    }
+/* Scroll fix for mobile */
+#previewPage {
+    overflow-x: auto;
 }
 
 /* Print */
@@ -85,7 +79,8 @@ th, td {
     }
 
     #a4 {
-        transform: scale(1);
+        width: 210mm;
+        height: 297mm;
     }
 }
 </style>
@@ -93,7 +88,7 @@ th, td {
 
 <body>
 
-<!-- INPUT PAGE -->
+<!-- INPUT -->
 <div class="container" id="formPage">
     <h2>Enter Products</h2>
 
@@ -108,20 +103,20 @@ th, td {
     <button onclick="generatePreview()">Submit</button>
 </div>
 
-<!-- PREVIEW PAGE -->
+<!-- PREVIEW -->
 <div id="previewPage" style="display:none;">
     <div id="a4">
-        
-        <!-- HEADER IMAGE -->
+
+        <!-- HEADER -->
         <div class="header">
-            <img src="Untitled design.jpg" alt="Header Image">
+            <img src="Untitled design.jpg">
         </div>
 
-        <!-- PRODUCT TABLE -->
+        <!-- TABLE -->
         <table id="productTable">
             <tr>
-                <th>Product</th>
-                <th>Price</th>
+                <th style="width:70%">Product</th>
+                <th style="width:30%">Price</th>
             </tr>
         </table>
 
@@ -149,8 +144,8 @@ function generatePreview() {
 
     table.innerHTML = `
         <tr>
-            <th>Product</th>
-            <th>Price</th>
+            <th style="width:70%">Product</th>
+            <th style="width:30%">Price</th>
         </tr>
     `;
 
@@ -161,7 +156,7 @@ function generatePreview() {
 
         if (name && price) {
             let row = table.insertRow();
-            row.insertCell(0).innerText = name.substring(0, 50);
+            row.insertCell(0).innerText = name.substring(0, 40);
             row.insertCell(1).innerText = "₹ " + price;
         }
     });
@@ -170,8 +165,19 @@ function generatePreview() {
     document.getElementById("previewPage").style.display = "block";
 }
 
+/* REAL PDF DOWNLOAD */
 function downloadPDF() {
-    window.print(); // Use "Save as PDF"
+    const element = document.getElementById("a4");
+
+    const opt = {
+        margin: 0,
+        filename: 'product-list.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 3, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save();
 }
 </script>
 
