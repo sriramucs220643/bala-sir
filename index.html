@@ -1,184 +1,879 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A4 Product Sheet</title>
 
-<!-- PDF Library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-}
+    <title>SJ Traders Invoice</title>
 
-/* Form Page */
-.container {
-    padding: 20px;
-    text-align: center;
-}
+    <!-- FONT -->
+    <link href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap" rel="stylesheet">
 
-input {
-    padding: 10px;
-    margin: 5px;
-    width: 90%;
-    max-width: 400px;
-}
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-button {
-    padding: 10px 15px;
-    margin: 10px 5px;
-    cursor: pointer;
-}
+    <!-- PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-/* A4 Layout */
-#a4 {
-    width: 210mm;
-    height: 297mm;
-    margin: auto;
-    padding: 8mm;
-    background: white;
-    box-sizing: border-box;
-    overflow: hidden; /* 🔥 FIX */
-}
+    <style>
 
-/* Header */
-.header img {
-    width: 100%;
-    height: auto;
-    max-height: 120mm; /* prevent large image */
-    object-fit: cover;
-}
+        *{
+            font-family:'Arimo', sans-serif;
+            font-size:12px;
+            box-sizing:border-box;
+        }
 
-/* Table */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    table-layout: fixed;
-}
+        body{
+            background:#ececec;
+            padding:20px;
+        }
 
-th, td {
-    border: 1px solid black;
-    padding: 6px;
-    font-size: 12px;
-    word-break: break-word;
-}
+        .form-box{
+            background:white;
+            padding:20px;
+            border-radius:8px;
+            margin-bottom:20px;
+        }
 
-/* Scroll fix for mobile */
-#previewPage {
-    overflow-x: auto;
-}
+        .title{
+            font-size:20px;
+            font-weight:bold;
+            margin-bottom:20px;
+        }
 
-/* Print */
-@media print {
-    .container, .actions {
-        display: none;
-    }
+        /* ================= INVOICE ================= */
 
-    #a4 {
-        width: 210mm;
-        height: 297mm;
-    }
-}
-</style>
+        #invoice{
+
+            width:210mm;
+            min-height:297mm;
+
+            background:white;
+
+            margin:auto;
+
+            padding:10mm;
+
+            overflow:hidden;
+
+            color:black;
+        }
+
+        /* ================= HEADER ================= */
+
+        .header{
+
+            display:flex;
+            align-items:flex-start;
+
+            margin-bottom:10px;
+        }
+
+        .logo{
+
+            width:100px;
+            height:100px;
+
+            object-fit:contain;
+        }
+
+        .company-details{
+
+            margin-left:15px;
+            line-height:1.6;
+        }
+
+        .company-name{
+
+            font-size:18px;
+            font-weight:bold;
+        }
+
+        /* ================= TABLE ================= */
+
+        table{
+
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        td,th{
+
+            border:1px solid black;
+            padding:5px;
+            vertical-align:top;
+        }
+
+        .center{
+            text-align:center;
+        }
+
+        .right{
+            text-align:right;
+        }
+
+        .bold{
+            font-weight:bold;
+        }
+
+        .invoice-heading{
+
+            text-align:center;
+            font-size:24px;
+            font-weight:bold;
+
+            margin:10px 0;
+        }
+
+        .signature-box{
+            height:120px;
+        }
+
+        .product-row td{
+            height:35px;
+        }
+
+        /* ================= BUTTONS ================= */
+
+        .buttons{
+            text-align:center;
+            margin-top:20px;
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media(max-width:768px){
+
+            body{
+                padding:10px;
+            }
+
+            #invoice{
+
+                width:100%;
+                min-height:auto;
+            }
+
+        }
+
+        /* ================= PRINT ================= */
+
+        @page{
+            size:A4 portrait;
+            margin:0;
+        }
+
+        @media print{
+
+            body{
+                background:white;
+                padding:0;
+                margin:0;
+            }
+
+            .no-print{
+                display:none !important;
+            }
+
+            #invoice{
+
+                width:210mm;
+                min-height:297mm;
+
+                margin:0 auto;
+
+                padding:10mm;
+            }
+
+        }
+
+    </style>
+
 </head>
 
 <body>
 
-<!-- INPUT -->
-<div class="container" id="formPage">
-    <h2>Enter Products</h2>
+<!-- ================= FORM ================= -->
 
-    <div id="products">
-        <div>
-            <input type="text" placeholder="Product Name">
-            <input type="text" placeholder="Price">
-        </div>
+<div class="form-box no-print">
+
+    <div class="title">
+        SJ TRADERS INVOICE GENERATOR
     </div>
 
-    <button onclick="addProduct()">+ Add Product</button>
-    <button onclick="generatePreview()">Submit</button>
-</div>
+    <div class="row">
 
-<!-- PREVIEW -->
-<div id="previewPage" style="display:none;">
-    <div id="a4">
+        <div class="col-md-6 mb-3">
 
-        <!-- HEADER -->
-        <div class="header">
-            <img src="Untitled design.jpg">
+            <label class="fw-bold">TO ADDRESS</label>
+
+            <textarea id="toAddress" class="form-control" rows="7"></textarea>
+
         </div>
 
-        <!-- TABLE -->
-        <table id="productTable">
-            <tr>
-                <th style="width:70%">Product</th>
-                <th style="width:30%">Price</th>
-            </tr>
+        <div class="col-md-6">
+
+            <div class="mb-2">
+                <label class="fw-bold">Bill No</label>
+                <input type="text" id="billNo" class="form-control">
+            </div>
+
+            <div class="mb-2">
+                <label class="fw-bold">Date</label>
+                <input type="date" id="date" class="form-control">
+            </div>
+
+            <div class="mb-2">
+                <label class="fw-bold">PO Ref</label>
+                <input type="text" id="poRef" class="form-control">
+            </div>
+
+            <div class="mb-2">
+                <label class="fw-bold">PO Date</label>
+                <input type="date" id="poDate" class="form-control">
+            </div>
+
+            <div class="mb-2">
+                <label class="fw-bold">Vehicle No</label>
+                <input type="text" id="vehicleNo" class="form-control">
+            </div>
+
+            <div class="mb-2">
+                <label class="fw-bold">Date Of Delivery</label>
+                <input type="date" id="deliveryDate" class="form-control">
+            </div>
+
+            <div class="mb-2">
+                <label class="fw-bold">Customer GST</label>
+                <input type="text" id="customerGST" class="form-control">
+            </div>
+
+        </div>
+
+    </div>
+
+    <hr>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <h5>Products</h5>
+
+        <button class="btn btn-primary btn-sm" onclick="addProduct()">
+            + Add Product
+        </button>
+
+    </div>
+
+    <div class="table-responsive">
+
+        <table class="table table-bordered text-center">
+
+            <thead>
+
+                <tr>
+
+                    <th>HSN</th>
+                    <th>Description</th>
+                    <th>Qty/KG</th>
+                    <th>Unit Price</th>
+                    <th>Delete</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="productInputs"></tbody>
+
         </table>
 
     </div>
 
-    <div class="actions" style="text-align:center;">
-        <button onclick="window.print()">Print</button>
-        <button onclick="downloadPDF()">Download PDF</button>
+    <button class="btn btn-success" onclick="generateInvoice()">
+        Generate Preview
+    </button>
+
+</div>
+
+<!-- ================= INVOICE ================= -->
+
+<div id="invoice">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <!-- YOUR LOGO -->
+        <img src="LOGO.png" class="logo">
+
+        <div class="company-details">
+
+            <div class="company-name">
+                SJ TRADERS
+            </div>
+
+            Door no 2/693, Q2,<br>
+            K S A Rajaduraj Nagar<br>
+            Sivakasi - 626123<br>
+            G.S.T Number : 33AFXFS1482E1ZO
+
+        </div>
+
     </div>
+
+    <!-- TOP TABLE -->
+
+    <table>
+
+        <tr>
+
+            <td width="45%">
+
+                <b>TO :</b><br><br>
+
+                <div id="previewAddress"></div>
+
+            </td>
+
+            <td width="55%">
+
+                <table>
+
+                    <tr>
+                        <td width="40%">Bill No</td>
+                        <td id="previewBillNo"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Date</td>
+                        <td id="previewDate"></td>
+                    </tr>
+
+                    <tr>
+                        <td>PO Ref</td>
+                        <td id="previewPoRef"></td>
+                    </tr>
+
+                    <tr>
+                        <td>PO Date</td>
+                        <td id="previewPoDate"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Vehicle No</td>
+                        <td id="previewVehicle"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Date Of Delivery</td>
+                        <td id="previewDelivery"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Customer GST</td>
+                        <td id="previewGST"></td>
+                    </tr>
+
+                </table>
+
+            </td>
+
+        </tr>
+
+    </table>
+
+    <!-- TITLE -->
+
+    <div class="invoice-heading">
+        INVOICE
+    </div>
+
+    <!-- PRODUCT TABLE -->
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th width="6%">SL.NO</th>
+                <th width="12%">HSN</th>
+                <th width="38%">Description</th>
+                <th width="14%">Qty / KG</th>
+                <th width="14%">Unit Price</th>
+                <th width="16%">Amount</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody id="previewProducts"></tbody>
+
+        <tfoot>
+
+            <tr>
+
+                <td colspan="5" class="right bold">
+                    Sub Total
+                </td>
+
+                <td id="subtotal" class="right"></td>
+
+            </tr>
+
+            <tr>
+
+                <td colspan="5" class="right bold">
+                    SGST @ 2.5%
+                </td>
+
+                <td id="sgst" class="right"></td>
+
+            </tr>
+
+            <tr>
+
+                <td colspan="5" class="right bold">
+                    CGST @ 2.5%
+                </td>
+
+                <td id="cgst" class="right"></td>
+
+            </tr>
+
+            <tr>
+
+                <td colspan="5" class="right bold">
+                    Total
+                </td>
+
+                <td id="grandTotal" class="right bold"></td>
+
+            </tr>
+
+        </tfoot>
+
+    </table>
+
+    <!-- AMOUNT WORDS -->
+
+    <table>
+
+        <tr>
+
+            <td>
+
+                <b>Rupees - </b>
+
+                <span id="amountWords"></span>
+
+            </td>
+
+        </tr>
+
+    </table>
+
+    <!-- BANK DETAILS -->
+
+    <table>
+
+        <tr>
+
+            <td>
+
+                <b>Bank Details :</b><br><br>
+
+                Company Name : SJ Traders<br>
+                Account Number : 341150050800334<br>
+                Bank Name : TMB<br>
+                Branch : Vilampatti branch<br>
+                IFSC code : TMBL0000341
+
+            </td>
+
+        </tr>
+
+    </table>
+
+    <!-- SIGNATURE -->
+
+    <table>
+
+        <tr>
+
+            <td class="signature-box" width="50%">
+
+                Customer Authorized Signature with seal
+
+            </td>
+
+            <td class="signature-box" width="50%">
+
+                SJ Traders
+
+                <div style="margin-top:75px;">
+                    Authorized Signature
+                </div>
+
+            </td>
+
+        </tr>
+
+    </table>
+
+</div>
+
+<!-- ================= BUTTONS ================= -->
+
+<div class="buttons no-print">
+
+    <button class="btn btn-dark" onclick="downloadPDF()">
+        Download PDF
+    </button>
+
+    <button class="btn btn-danger" onclick="printInvoice()">
+        Print
+    </button>
+
 </div>
 
 <script>
-function addProduct() {
-    let div = document.createElement("div");
-    div.innerHTML = `
-        <input type="text" placeholder="Product Name">
-        <input type="text" placeholder="Price">
-    `;
-    document.getElementById("products").appendChild(div);
+
+/* ================= AUTO DATE ================= */
+
+document.getElementById("date").valueAsDate = new Date();
+document.getElementById("poDate").valueAsDate = new Date();
+document.getElementById("deliveryDate").valueAsDate = new Date();
+
+/* ================= AUTO BILL NUMBER ================= */
+
+let billNo = localStorage.getItem("billNo");
+
+if(billNo){
+
+    document.getElementById("billNo").value = billNo;
+
+}else{
+
+    document.getElementById("billNo").value = "01";
 }
 
-function generatePreview() {
-    let productDivs = document.querySelectorAll("#products div");
-    let table = document.getElementById("productTable");
+/* ================= ADD PRODUCT ================= */
 
-    table.innerHTML = `
-        <tr>
-            <th style="width:70%">Product</th>
-            <th style="width:30%">Price</th>
-        </tr>
+function addProduct(){
+
+    let row = `
+
+    <tr>
+
+        <td>
+            <input type="text" class="form-control hsn">
+        </td>
+
+        <td>
+            <input type="text" class="form-control desc">
+        </td>
+
+        <td>
+            <input type="number" class="form-control qty">
+        </td>
+
+        <td>
+            <input type="number" class="form-control price">
+        </td>
+
+        <td>
+            <button class="btn btn-danger btn-sm" onclick="removeRow(this)">
+                X
+            </button>
+        </td>
+
+    </tr>
+
     `;
 
-    productDivs.forEach(div => {
-        let inputs = div.querySelectorAll("input");
-        let name = inputs[0].value;
-        let price = inputs[1].value;
+    document.getElementById("productInputs").innerHTML += row;
 
-        if (name && price) {
-            let row = table.insertRow();
-            row.insertCell(0).innerText = name.substring(0, 40);
-            row.insertCell(1).innerText = "₹ " + price;
-        }
+}
+
+addProduct();
+
+/* ================= REMOVE ROW ================= */
+
+function removeRow(btn){
+
+    btn.parentElement.parentElement.remove();
+
+}
+
+/* ================= GENERATE INVOICE ================= */
+
+function generateInvoice(){
+
+    /* TOP DETAILS */
+
+    document.getElementById("previewAddress").innerHTML =
+    document.getElementById("toAddress").value.replace(/\n/g,"<br>");
+
+    document.getElementById("previewBillNo").innerText =
+    document.getElementById("billNo").value;
+
+    document.getElementById("previewDate").innerText =
+    formatDate(document.getElementById("date").value);
+
+    document.getElementById("previewPoRef").innerText =
+    document.getElementById("poRef").value;
+
+    document.getElementById("previewPoDate").innerText =
+    formatDate(document.getElementById("poDate").value);
+
+    document.getElementById("previewVehicle").innerText =
+    document.getElementById("vehicleNo").value;
+
+    document.getElementById("previewDelivery").innerText =
+    formatDate(document.getElementById("deliveryDate").value);
+
+    document.getElementById("previewGST").innerText =
+    document.getElementById("customerGST").value;
+
+    /* PRODUCTS */
+
+    let rows = document.querySelectorAll("#productInputs tr");
+
+    let html = "";
+
+    let subtotal = 0;
+
+    rows.forEach((row,index)=>{
+
+        let hsn =
+        row.querySelector(".hsn").value;
+
+        let desc =
+        row.querySelector(".desc").value;
+
+        let qty =
+        Number(row.querySelector(".qty").value);
+
+        let price =
+        Number(row.querySelector(".price").value);
+
+        let amount = qty * price;
+
+        subtotal += amount;
+
+        html += `
+
+        <tr class="product-row">
+
+            <td class="center">${index+1}</td>
+
+            <td>${hsn}</td>
+
+            <td>${desc}</td>
+
+            <td class="center">${qty}</td>
+
+            <td class="right">${price.toFixed(2)}</td>
+
+            <td class="right">${amount.toFixed(2)}</td>
+
+        </tr>
+
+        `;
+
     });
 
-    document.getElementById("formPage").style.display = "none";
-    document.getElementById("previewPage").style.display = "block";
+    document.getElementById("previewProducts").innerHTML = html;
+
+    /* GST */
+
+    let sgst = subtotal * 0.025;
+
+    let cgst = subtotal * 0.025;
+
+    let total = subtotal + sgst + cgst;
+
+    document.getElementById("subtotal").innerText =
+    subtotal.toFixed(2);
+
+    document.getElementById("sgst").innerText =
+    sgst.toFixed(2);
+
+    document.getElementById("cgst").innerText =
+    cgst.toFixed(2);
+
+    document.getElementById("grandTotal").innerText =
+    total.toFixed(2);
+
+    /* WORDS */
+
+    document.getElementById("amountWords").innerText =
+    numberToWords(Math.round(total)) + " only";
+
+    /* SAVE NEXT BILL */
+
+    let current =
+    parseInt(document.getElementById("billNo").value) || 1;
+
+    localStorage.setItem("billNo", current + 1);
+
 }
 
-/* REAL PDF DOWNLOAD */
-function downloadPDF() {
-    const element = document.getElementById("a4");
+/* ================= DATE FORMAT ================= */
 
-    const opt = {
-        margin: 0,
-        filename: 'product-list.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 3, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+function formatDate(date){
+
+    if(!date) return "";
+
+    let d = new Date(date);
+
+    let day =
+    String(d.getDate()).padStart(2,'0');
+
+    let month =
+    String(d.getMonth()+1).padStart(2,'0');
+
+    let year =
+    String(d.getFullYear()).slice(-2);
+
+    return `${day}-${month}-${year}`;
+
+}
+
+/* ================= PRINT ================= */
+
+function printInvoice(){
+
+    generateInvoice();
+
+    window.print();
+
+}
+
+/* ================= PDF ================= */
+
+async function downloadPDF(){
+
+    generateInvoice();
+
+    const element = document.getElementById("invoice");
+
+    const options = {
+
+        margin:0,
+
+        filename:'SJ_Invoice.pdf',
+
+        image:{
+            type:'jpeg',
+            quality:1
+        },
+
+        html2canvas:{
+
+            scale:3,
+
+            useCORS:true,
+
+            scrollY:0
+
+        },
+
+        jsPDF:{
+
+            unit:'mm',
+
+            format:'a4',
+
+            orientation:'portrait'
+
+        }
+
     };
 
-    html2pdf().set(opt).from(element).save();
+    await html2pdf()
+    .set(options)
+    .from(element)
+    .save();
+
 }
+
+/* ================= NUMBER TO WORDS ================= */
+
+function numberToWords(num){
+
+    let a = [
+        '',
+        'One ',
+        'Two ',
+        'Three ',
+        'Four ',
+        'Five ',
+        'Six ',
+        'Seven ',
+        'Eight ',
+        'Nine ',
+        'Ten ',
+        'Eleven ',
+        'Twelve ',
+        'Thirteen ',
+        'Fourteen ',
+        'Fifteen ',
+        'Sixteen ',
+        'Seventeen ',
+        'Eighteen ',
+        'Nineteen '
+    ];
+
+    let b = [
+        '',
+        '',
+        'Twenty ',
+        'Thirty ',
+        'Forty ',
+        'Fifty ',
+        'Sixty ',
+        'Seventy ',
+        'Eighty ',
+        'Ninety '
+    ];
+
+    if ((num = num.toString()).length > 9)
+        return 'Overflow';
+
+    let n = ('000000000' + num)
+    .substr(-9)
+    .match(/.{1,2}/g);
+
+    let str = '';
+
+    str += (Number(n[0]) != 0)
+    ? (a[Number(n[0])] || b[n[0][0]] + a[n[0][1]]) + 'Crore '
+    : '';
+
+    str += (Number(n[1]) != 0)
+    ? (a[Number(n[1])] || b[n[1][0]] + a[n[1][1]]) + 'Lakh '
+    : '';
+
+    str += (Number(n[2]) != 0)
+    ? (a[Number(n[2])] || b[n[2][0]] + a[n[2][1]]) + 'Thousand '
+    : '';
+
+    str += (Number(n[3]) != 0)
+    ? (a[Number(n[3])] || b[n[3][0]] + a[n[3][1]]) + 'Hundred '
+    : '';
+
+    str += (Number(n[4]) != 0)
+    ? ((str != '') ? 'and ' : '') +
+    (a[Number(n[4])] || b[n[4][0]] + a[n[4][1]])
+    : '';
+
+    return str;
+
+}
+
 </script>
 
 </body>
